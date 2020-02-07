@@ -38,10 +38,8 @@ class FindPlugin extends Plugin<DecorationSet> {
           apply: (tr: Transaction, old: DecorationSet, oldState: EditorState, newState: EditorState) => {
             if (this.updating) {
               return this.resultDecorations(tr);
-            } else if (tr.docChanged) {
-              return old.map(tr.mapping, tr.doc);
-            } else {
-              return old;
+            } else  {
+              return DecorationSet.empty;
             }
           },
         },
@@ -261,7 +259,12 @@ class FindPlugin extends Plugin<DecorationSet> {
     // perform search and populate results
     const textNodes = mergedTextNodes(tr.doc);
     textNodes.forEach(textNode => {
+      
       const search = this.findRegEx();
+      if (!search) {
+        return;
+      }
+
       let m;
       // eslint-disable-next-line no-cond-assign
       while ((m = search.exec(textNode.text))) {
@@ -309,14 +312,26 @@ class FindPlugin extends Plugin<DecorationSet> {
 
   private matchesTerm(text: string) {
     if (this.hasTerm()) {
-      return this.findRegEx().test(text);
+      const regex = this.findRegEx();
+      if (regex) {
+        return regex.test(text);
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
   }
 
   private findRegEx() {
-    return new RegExp(this.term, !this.options.caseSensitive ? 'gui' : 'gu');
+    try
+    {
+      return new RegExp(this.term, !this.options.caseSensitive ? 'gui' : 'gu');
+    }
+    catch
+    {
+      return null;
+    }
   }
 
 

@@ -88,9 +88,7 @@ export interface EditorKeybindings {
 export enum EditorEvents {
   Update = 'update',
   OutlineChange = 'outlineChange',
-  SelectionChange = 'selectionChange',
-  Focus = 'gotFocus',
-  Blur = 'lostFocus'
+  SelectionChange = 'selectionChange'
 }
 
 export interface EditorSelection {
@@ -173,16 +171,6 @@ export class Editor {
       state: this.state,
       dispatchTransaction: this.dispatchTransaction.bind(this),
       domParser: new EditorDOMParser(this.schema),
-      handleDOMEvents: {
-        focus: (_view: EditorView, _event: Event) => {
-          this.emitEvent(EditorEvents.Focus);
-          return false;
-        },
-        blur: (_view: EditorView, _event: Event) => {
-          this.emitEvent(EditorEvents.Blur);
-          return false;
-        }
-      },
     });
 
     // add proportinal font class to parent
@@ -414,8 +402,6 @@ export class Editor {
     events.set(EditorEvents.Update, new Event(EditorEvents.Update));
     events.set(EditorEvents.OutlineChange, new Event(EditorEvents.OutlineChange));
     events.set(EditorEvents.SelectionChange, new Event(EditorEvents.SelectionChange));
-    events.set(EditorEvents.Focus, new Event(EditorEvents.Focus));
-    events.set(EditorEvents.Blur, new Event(EditorEvents.Blur));
     return events;
   }
 
