@@ -258,10 +258,6 @@ public class PanmirrorWidget extends DockLayoutPanel implements
          outline_.updateOutline(editor_.getOutline());
              
       }));
-      
-      editorEventUnsubscribe_.add(editor_.subscribe(Panmirror.EditorEvents.Focus, () -> {
-         editor_.getFindReplace().clear();
-      }));
    }
    
    @Override
