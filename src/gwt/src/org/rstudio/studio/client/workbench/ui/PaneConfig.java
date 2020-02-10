@@ -177,7 +177,7 @@ public class PaneConfig extends UserPrefsAccessor.Panes
 
       JsArrayString ts1 = getTabSet1();
       JsArrayString ts2 = getTabSet2();
-      if (ts1.length() == 0 || ts2.length() == 0)
+      if (ts1.length() == 0 && ts2.length() == 0)
          return false;
 
       // Replace any obsoleted tabs in the config
@@ -224,8 +224,8 @@ public class PaneConfig extends UserPrefsAccessor.Panes
 
       // These tabs can be hidden sometimes; they can't stand alone in a tabset
       Set<String> hideableTabs = makeSet(getHideableTabs());
-      if (isSubset(hideableTabs, JsUtil.asIterable(ts1))
-          || isSubset(hideableTabs, JsUtil.asIterable(ts2)))
+      if ((ts1.length() > 0 && isSubset(hideableTabs, JsUtil.asIterable(ts1)))
+          || (ts2.length() > 0 && isSubset(hideableTabs, JsUtil.asIterable(ts2))))
       {
          return false;
       }
@@ -296,6 +296,9 @@ public class PaneConfig extends UserPrefsAccessor.Panes
 
    public static boolean isValidConfig(ArrayList<String> tabs)
    {
+      if (tabs.isEmpty())
+         return true;
+
       if (isSubset(makeSet(getHideableTabs()), tabs))
       {
          // The proposed tab config only contains hideable tabs (or possibly

@@ -219,7 +219,8 @@ class WorkbenchTabPanel
       // deal with migrating from n+1 to n tabs, and with -1 values
       int safeIndex = Math.min(Math.max(0, tabIndex), tabs_.size() - 1);
       
-      tabPanel_.selectTab(safeIndex);
+      if (safeIndex >= 0)
+         tabPanel_.selectTab(safeIndex);
    }
    
    public void selectTab(WorkbenchTab pane)
