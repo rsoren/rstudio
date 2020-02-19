@@ -21,6 +21,8 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SplitterResizedEvent;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
@@ -201,7 +203,7 @@ public class PaneManager
    }
 
    @Inject
-   public PaneManager(Provider<MainSplitPanel> pSplitPanel,
+   public PaneManager(Provider<EnhancedSplitPanel> pSplitPanel,
                       WorkbenchServerOperations server,
                       EventBus eventBus,
                       Session session,
@@ -276,9 +278,16 @@ public class PaneManager
       panes_ = createPanes(config);
       left_ = createSplitWindow(panes_.get(0), panes_.get(1), LEFT_COLUMN, 0.4, splitterSize);
       right_ = createSplitWindow(panes_.get(2), panes_.get(3), RIGHT_COLUMN, 0.6, splitterSize);
+      leftSource_ = new SimplePanel();
+      RichTextArea rta = new RichTextArea();
+      rta.setHeight("90%");
+      rta.setWidth("90%");
+      leftSource_.add(rta);
+      ArrayList<Widget> mylist = new ArrayList<Widget>();
+      mylist.add(leftSource_);
 
       panel_ = pSplitPanel.get();
-      panel_.initialize(left_, right_);
+      panel_.initialize(mylist, left_, right_);
       
       // count the number of source docs assigned to this window
       JsArray<SourceDocument> docs = 
@@ -773,9 +782,11 @@ public class PaneManager
       ArrayList<LogicalWindow> results = new ArrayList<>();
 
       JsArrayString panes = config.getQuadrants();
-      for (int i = 0; i < 4; i++)
+      //panes.push("LeftSource");
+      for (int i = 0; i < panes.length(); i++)
       {
          results.add(panesByName_.get(panes.get(i)));
+         Debug.logToConsole("Pane: " + panes.get(i).toString());
       }
       return results;
    }
@@ -785,6 +796,7 @@ public class PaneManager
       panesByName_ = new HashMap<>();
       panesByName_.put("Console", createConsole());
       panesByName_.put("Source", createSource());
+      //panesByName_.put("LeftSource", createLeftSource());
 
       Triad<LogicalWindow, WorkbenchTabPanel, MinimizedModuleTabLayoutPanel> ts1 = createTabSet(
             "TabSet1",
@@ -811,6 +823,7 @@ public class PaneManager
 
    private PaneConfig validateConfig(PaneConfig config)
    {
+      /*
       if (config == null)
          config = PaneConfig.createDefault();
       if (!config.validateAndAutoCorrect())
@@ -818,10 +831,11 @@ public class PaneManager
          Debug.log("Pane config is not valid");
          config = PaneConfig.createDefault();
       }
+      */
       return config;
    }
 
-   public MainSplitPanel getPanel()
+   public EnhancedSplitPanel getPanel()
    {
       return panel_;
    }
@@ -999,6 +1013,11 @@ public class PaneManager
    {
       return sourceLogicalWindow_;
    }
+
+   public LogicalWindow getLeftSourceLogicalWindow()
+   {
+      return leftSourceLogicalWindow_;
+   }
    
    public LogicalWindow getConsoleLogicalWindow()
    {
@@ -1065,6 +1084,17 @@ public class PaneManager
       sourceFrame.setFillWidget(source_.asWidget());
       source_.forceLoad();
       return sourceLogicalWindow_ = new LogicalWindow(
+            sourceFrame,
+            new MinimizedWindowFrame(frameName, frameName));
+   }
+
+   private LogicalWindow createLeftSource()
+   {
+      String frameName = "LeftSource";
+      WindowFrame sourceFrame = new WindowFrame(frameName);
+      sourceFrame.setFillWidget(source_.asWidget());
+      source_.forceLoad();
+      return leftSourceLogicalWindow_ = new LogicalWindow(
             sourceFrame,
             new MinimizedWindowFrame(frameName, frameName));
    }
@@ -1323,12 +1353,14 @@ public class PaneManager
    private final WorkbenchTab dataTab_;
    private final WorkbenchTab tutorialTab_;
    private final OptionsLoader.Shim optionsLoader_;
-   private final MainSplitPanel panel_;
+   private final EnhancedSplitPanel panel_;
    private LogicalWindow sourceLogicalWindow_;
+   private LogicalWindow leftSourceLogicalWindow_;
    private final HashMap<Tab, WorkbenchTabPanel> tabToPanel_ = new HashMap<>();
    private final HashMap<Tab, Integer> tabToIndex_ = new HashMap<>();
    private final HashMap<WorkbenchTab, Tab> wbTabToTab_ = new HashMap<>();
    private HashMap<String, LogicalWindow> panesByName_;
+   private final SimplePanel leftSource_;
    private final DualWindowLayoutPanel left_;
    private final DualWindowLayoutPanel right_;
    private ArrayList<LogicalWindow> panes_;
