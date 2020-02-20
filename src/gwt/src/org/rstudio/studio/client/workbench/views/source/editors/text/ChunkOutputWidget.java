@@ -766,6 +766,11 @@ public class ChunkOutputWidget extends Composite
       );
    }
    
+   private void popoutChunk(boolean melissa)
+   {
+      // put something here 
+   }
+
    private void toggleExpansionState(final boolean ensureVisible)
    {
       toggleExpansionState(ensureVisible, null);

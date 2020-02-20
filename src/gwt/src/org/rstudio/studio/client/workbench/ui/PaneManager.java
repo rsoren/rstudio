@@ -67,6 +67,8 @@ import org.rstudio.studio.client.workbench.prefs.views.PaneLayoutPreferencesPane
 import org.rstudio.studio.client.workbench.views.console.ConsolePane;
 import org.rstudio.studio.client.workbench.views.output.find.FindOutputTab;
 import org.rstudio.studio.client.workbench.views.output.markers.MarkersOutputTab;
+import org.rstudio.studio.client.workbench.views.source.SourcePane;
+import org.rstudio.studio.client.workbench.views.source.SourceSatellite;
 import org.rstudio.studio.client.workbench.views.source.SourceShim;
 import org.rstudio.studio.client.workbench.views.source.SourceWindowManager;
 import org.rstudio.studio.client.workbench.views.source.model.SourceDocument;
@@ -279,10 +281,26 @@ public class PaneManager
       left_ = createSplitWindow(panes_.get(0), panes_.get(1), LEFT_COLUMN, 0.4, splitterSize);
       right_ = createSplitWindow(panes_.get(2), panes_.get(3), RIGHT_COLUMN, 0.6, splitterSize);
       leftSource_ = new SimplePanel();
+      /*
       RichTextArea rta = new RichTextArea();
       rta.setHeight("90%");
       rta.setWidth("90%");
       leftSource_.add(rta);
+      */
+
+      {
+         SourcePane sp = new SourcePane();
+         sp.setSize("100%", "100%");
+         String windowId = SourceWindowManager.getSourceWindowId();
+         String frameName = "Left Source";
+         //SourceSatellite satellite = new SourceSatellite(windowId);
+         //sourceFrame.setFillWidget(source_.asWidget());
+         SourceShim shim = new SourceShim(source_);
+         shim.forceLoad();
+         //shim.onNewSourceDoc();
+         leftSource_.add(shim);
+      }
+
       ArrayList<Widget> mylist = new ArrayList<Widget>();
       mylist.add(leftSource_);
 

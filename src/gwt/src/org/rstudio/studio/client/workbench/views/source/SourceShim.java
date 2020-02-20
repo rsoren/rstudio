@@ -47,7 +47,7 @@ import org.rstudio.studio.client.workbench.snippets.model.SnippetsChangedEvent;
 import org.rstudio.studio.client.workbench.views.source.editors.text.AceEditor;
 import org.rstudio.studio.client.workbench.views.source.events.*;
 
-@Singleton
+//@Singleton
 public class SourceShim extends Composite
    implements IsWidget, HasEnsureVisibleHandlers, HasEnsureHeightHandlers, BeforeShowCallback,
               ProvidesResize, RequiresResize, RequiresVisibilityChanged, MaximizeSourceWindowEvent.Handler,
@@ -216,6 +216,15 @@ public class SourceShim extends Composite
       }
 
       private SourceShim parent_;
+   }
+
+   public SourceShim(SourceShim shim)
+   {
+      panel_ = new LayoutPanel();
+      panel_.setSize("100%", "100%");
+      initWidget(panel_);
+      asyncSource_ = shim.asyncSource_;
+      source_ = null;
    }
 
    @Inject
