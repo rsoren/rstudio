@@ -232,22 +232,29 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
       tabSet1ModuleList_.setValue(toArrayList(userPrefs.panes().getGlobalValue().getTabSet1()));
       tabSet2ModuleList_ = new ModuleList();
       tabSet2ModuleList_.setValue(toArrayList(userPrefs.panes().getGlobalValue().getTabSet2()));
+      tabSet3ModuleList_ = new ModuleList();
+      //tabSet3ModuleList_.setValue(toArrayList(userPrefs.panes().getGlobalValue().getTabSet3()));
 
       ValueChangeHandler<ArrayList<Boolean>> vch = new ValueChangeHandler<ArrayList<Boolean>>()
       {
+         // whenever tabset 1 or 2 changes, make sure the other tabset is the opposite
          public void onValueChange(ValueChangeEvent<ArrayList<Boolean>> e)
          {
             dirty_ = true;
 
             ModuleList source = (ModuleList) e.getSource();
+            //ModuleList other = tabSet3ModuleList_;
             ModuleList other = (source == tabSet1ModuleList_)
                                ? tabSet2ModuleList_
                                : tabSet1ModuleList_;
 
+            // if the source configuration is not valid
             if (!PaneConfig.isValidConfig(source.getValue()))
             {
                ArrayList<Boolean> indices = source.getSelectedIndices();
                ArrayList<Boolean> otherIndices = other.getSelectedIndices();
+               // set the source index to the opposite value of the other index
+               // so every index is true for some list
                for (int i = 0; i < indices.size(); i++)
                {
                   indices.set(i, !otherIndices.get(i));
@@ -258,12 +265,17 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
             {
                ArrayList<Boolean> indices = source.getSelectedIndices();
                ArrayList<Boolean> otherIndices = new ArrayList<>();
+               // for every other index, set it to the opposite of the source
                for (Boolean b : indices)
                   otherIndices.add(!b);
                other.setSelectedIndices(otherIndices);
 
                updateTabSetLabels();
             }
+            // now we should iterate through source, if the index is false on source and other,
+            // set it to true on tabSet3
+            // if the index is true on source, set it to false on other and tabSet3 
+            // what if the config isn't valid? what is an invalid config now?
          }
       };
       tabSet1ModuleList_.addValueChangeHandler(vch);
@@ -326,6 +338,10 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
          for (String tab : tabSet2ModuleList_.getValue())
             tabSet2.push(tab);
          
+         JsArrayString tabSet3 = JsArrayString.createArray().cast();
+         for (String tab : tabSet3ModuleList_.getValue())
+            tabSet3.push(tab);
+
          // Determine implicit preference for console top/bottom location
          // This needs to be saved so that when the user executes the 
          // Console on Left/Right commands we know whether to position 
@@ -344,7 +360,7 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
             consoleRightOnTop = false;
          
          userPrefs_.panes().setGlobalValue(PaneConfig.create(
-               panes, tabSet1, tabSet2, consoleLeftOnTop, consoleRightOnTop));
+               panes, tabSet1, tabSet2, tabSet3, consoleLeftOnTop, consoleRightOnTop));
 
          dirty_ = false;
       }
@@ -367,6 +383,8 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
             allPanePanels_[i].add(tabSet1ModuleList_);
          else if (value == "TabSet2")
             allPanePanels_[i].add(tabSet2ModuleList_);
+         else if (value == "TabSet3")
+            allPanePanels_[i].add(tabSet3ModuleList_);
       }
    }
 
@@ -376,6 +394,7 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
       {
          pane.setItemText(2, StringUtil.join(tabSet1ModuleList_.getValue(), ", "));
          pane.setItemText(3, StringUtil.join(tabSet2ModuleList_.getValue(), ", "));
+         //pane.setItemText(4, StringUtil.join(tabSet3ModuleList_.getValue(), ", "));
       }
    }
 
@@ -401,6 +420,7 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
    private final VerticalPanel[] allPanePanels_;
    private final ModuleList tabSet1ModuleList_;
    private final ModuleList tabSet2ModuleList_;
+   private final ModuleList tabSet3ModuleList_;
    private boolean dirty_ = false;
   
 }

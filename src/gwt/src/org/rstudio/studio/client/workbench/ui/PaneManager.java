@@ -205,7 +205,7 @@ public class PaneManager
    }
 
    @Inject
-   public PaneManager(Provider<EnhancedSplitPanel> pSplitPanel,
+   public PaneManager(Provider</*EnhancedSplitPanel*/MainSplitPanel> pSplitPanel,
                       WorkbenchServerOperations server,
                       EventBus eventBus,
                       Session session,
@@ -291,21 +291,21 @@ public class PaneManager
       {
          SourcePane sp = new SourcePane();
          sp.setSize("100%", "100%");
-         String windowId = SourceWindowManager.getSourceWindowId();
-         String frameName = "Left Source";
+         //String windowId = SourceWindowManager.getSourceWindowId();
+         //String frameName = "Left Source";
          //SourceSatellite satellite = new SourceSatellite(windowId);
          //sourceFrame.setFillWidget(source_.asWidget());
-         SourceShim shim = new SourceShim(source_);
-         shim.forceLoad();
+         //SourceShim shim = new SourceShim(source_);
+         //shim.forceLoad();
          //shim.onNewSourceDoc();
-         leftSource_.add(shim);
+         //leftSource_.add(source_);
       }
 
       ArrayList<Widget> mylist = new ArrayList<Widget>();
       mylist.add(leftSource_);
 
       panel_ = pSplitPanel.get();
-      panel_.initialize(mylist, left_, right_);
+      panel_.initialize(/*mylist,*/ left_, right_);
       
       // count the number of source docs assigned to this window
       JsArray<SourceDocument> docs = 
@@ -570,6 +570,7 @@ public class PaneManager
             panes, 
             paneConfig.getTabSet1(), 
             paneConfig.getTabSet2(),
+            paneConfig.getTabSet3(),
             paneConfig.getConsoleLeftOnTop(),
             paneConfig.getConsoleRightOnTop()).cast());
          userPrefs_.writeUserPrefs();
@@ -853,7 +854,7 @@ public class PaneManager
       return config;
    }
 
-   public EnhancedSplitPanel getPanel()
+   public /*EnhancedSplitPanel*/MainSplitPanel getPanel()
    {
       return panel_;
    }
@@ -1371,7 +1372,7 @@ public class PaneManager
    private final WorkbenchTab dataTab_;
    private final WorkbenchTab tutorialTab_;
    private final OptionsLoader.Shim optionsLoader_;
-   private final EnhancedSplitPanel panel_;
+   private final MainSplitPanel/*EnhancedSplitPanel*/ panel_;
    private LogicalWindow sourceLogicalWindow_;
    private LogicalWindow leftSourceLogicalWindow_;
    private final HashMap<Tab, WorkbenchTabPanel> tabToPanel_ = new HashMap<>();

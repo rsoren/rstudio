@@ -28,12 +28,14 @@ public class PaneConfig extends UserPrefsAccessor.Panes
    public native static PaneConfig create(JsArrayString panes,
                                           JsArrayString tabSet1,
                                           JsArrayString tabSet2,
+                                          JsArrayString tabSet3,
                                           boolean consoleLeftOnTop,
                                           boolean consoleRightOnTop) /*-{
       return { 
          quadrants: panes, 
          tabSet1: tabSet1, 
          tabSet2: tabSet2,
+         tabSet3: tabSet3,
          console_left_on_top: consoleLeftOnTop,
          console_right_on_top: consoleRightOnTop 
       };
@@ -63,7 +65,9 @@ public class PaneConfig extends UserPrefsAccessor.Panes
       tabSet2.push("Help");
       tabSet2.push("Viewer");
 
-      return create(panes, tabSet1, tabSet2, false, true);
+      JsArrayString tabSet3 = createArray().cast();
+
+      return create(panes, tabSet1, tabSet2, tabSet3, false, true);
    }
 
    public static String[] getAllPanes()
@@ -254,6 +258,7 @@ public class PaneConfig extends UserPrefsAccessor.Panes
       return create(copy(getQuadrants()),
                     copy(getTabSet1()),
                     copy(getTabSet2()),
+                    copy(getTabSet3()),
                     getConsoleLeftOnTop(),
                     getConsoleRightOnTop());
    }
