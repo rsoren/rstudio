@@ -1193,6 +1193,14 @@ public class PaneManager
             labels.add(getTabLabel(tab));
       }
       minimized.setTabs(labels.toArray(new String[labels.size()]));
+      if (tabs.size() <= 1)
+      {
+         //tabPanel.getParentWindow().transitionToState(WindowState.HIDE);
+      
+          LogicalWindow parent = tabPanel.getParentWindow();
+          parent.onWindowStateChange(new WindowStateChangeEvent(WindowState.HIDE));
+          parent.transitionToState(WindowState.HIDE);
+      }
    }
 
    private String getTabLabel(Tab tab)

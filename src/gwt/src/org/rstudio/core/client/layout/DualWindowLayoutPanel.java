@@ -113,8 +113,16 @@ public class DualWindowLayoutPanel extends SimplePanel
                layout(windowA_, windowB_, event.skipFocusChange());
                break;
             case MAXIMIZE:
-               windowA_.transitionToState(MAXIMIZE);
-               windowB_.transitionToState(MINIMIZE);
+               if (windowB_.getState() == WindowState.HIDE)
+               {
+                  windowA_.transitionToState(HIDE);
+                  windowB_.transitionToState(EXCLUSIVE);
+               }
+               else
+               {
+                  windowA_.transitionToState(MAXIMIZE);
+                  windowB_.transitionToState(MINIMIZE);
+               }
                layout(windowA_, windowB_, event.skipFocusChange());
                break;
             case MINIMIZE:
@@ -391,8 +399,13 @@ public class DualWindowLayoutPanel extends SimplePanel
                   topState = NORMAL;
                   break;
                case MAXIMIZE:
-                  topState = MINIMIZE;
+               {
+                  if (windowA_.getState() == WindowState.HIDE)
+                     topState = HIDE;
+                  else
+                     topState = MINIMIZE;
                   break;
+               }
                case MINIMIZE:
                   topState = MAXIMIZE;
                   break;
@@ -527,6 +540,7 @@ public class DualWindowLayoutPanel extends SimplePanel
             windowA_.getNormal(), windowA_.getMinimized(),
             windowB_.getNormal(), windowB_.getMinimized() });
 
+      // !!! why is this delayed
       Scheduler.get().scheduleFinally(new ScheduledCommand()
       {
          public void execute()

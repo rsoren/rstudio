@@ -261,10 +261,17 @@ public class UserPrefsAccessor extends Prefs
       public final static String QUADRANTS_CONSOLE = "Console";
       public final static String QUADRANTS_TABSET1 = "TabSet1";
       public final static String QUADRANTS_TABSET2 = "TabSet2";
-      public final static String QUADRANTS_TABSET3 = "TabSet3";
 
       public final native JsArrayString getQuadrants() /*-{
          return this.quadrants;
+      }-*/;
+
+      public final native JsArrayString getSource() /*-{
+         return this.source;
+      }-*/;
+
+      public final native JsArrayString getConsole() /*-{
+         return this.console;
       }-*/;
 
       public final native JsArrayString getTabSet1() /*-{

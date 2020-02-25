@@ -74,6 +74,8 @@ namespace prefs {
 #define kHighlightSelectedLine "highlight_selected_line"
 #define kPanes "panes"
 #define kPanesQuadrants "quadrants"
+#define kPanesSource "source"
+#define kPanesConsole "console"
 #define kPanesTabSet1 "tabSet1"
 #define kPanesTabSet2 "tabSet2"
 #define kPanesTabSet3 "tabSet3"

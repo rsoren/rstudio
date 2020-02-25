@@ -94,7 +94,7 @@ public class PaneConfig extends UserPrefsAccessor.Panes
                            "Help", "Viewer"};
    }
 
-   public static String[] getHideableTabs()
+   public static String[] getNonStandaloneTabs()
    {
       return new String[] {"Build", "VCS", "Tutorial", "Presentation", "Connections", "Packages" };
    }
@@ -226,13 +226,11 @@ public class PaneConfig extends UserPrefsAccessor.Panes
             else
                ts1.push(tab);
 
-      // These tabs can be hidden sometimes; they can't stand alone in a tabset
-      Set<String> hideableTabs = makeSet(getHideableTabs());
-      if (isSubset(hideableTabs, JsUtil.asIterable(ts1))
-          || isSubset(hideableTabs, JsUtil.asIterable(ts2)))
-      {
+      // These tabs can't stand alone in a tabset
+      Set<String> nonStandaloneTabs = makeSet(getNonStandaloneTabs());
+      if (isSubset(nonStandaloneTabs, JsUtil.asIterable(ts1))
+          || isSubset(nonStandaloneTabs, JsUtil.asIterable(ts2)))
          return false;
-      }
 
       return true;
    }
@@ -301,21 +299,11 @@ public class PaneConfig extends UserPrefsAccessor.Panes
 
    public static boolean isValidConfig(ArrayList<String> tabs)
    {
-      if (isSubset(makeSet(getHideableTabs()), tabs))
+      if (!tabs.isEmpty() && isSubset(makeSet(getNonStandaloneTabs()), tabs))
       {
-         // The proposed tab config only contains hideable tabs (or possibly
-         // no tabs at all). Reject.
+         // The proposed tab config only contains tabs that cannot standalone. Reject.
          return false;
       }
-      else if (isSubset(makeSet(tabs.toArray(new String[tabs.size()])),
-                        makeSet(getAlwaysVisibleTabs())))
-      {
-         // The proposed tab config contains all the always-visible tabs,
-         // which implies that the other tab config only contains hideable
-         // tabs (or possibly no tabs at all). Reject.
-         return false;
-      }
-      else
-         return true;
+      return true;
    }
 }

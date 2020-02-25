@@ -59,6 +59,11 @@ public class WindowFrameButton extends FocusWidget
       updateLabel();
    }
 
+   public boolean getExclusive()
+   {
+      return exclusive_;
+   }
+
    /**
     * update accessibility label based on button's default state (max, min) and current
     * state of its window (normal, maximized, or exclusive)

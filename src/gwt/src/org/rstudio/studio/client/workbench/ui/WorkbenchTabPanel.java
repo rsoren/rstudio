@@ -31,12 +31,14 @@ import com.google.gwt.user.client.ui.Widget;
 import org.rstudio.core.client.HandlerRegistrations;
 import org.rstudio.core.client.events.*;
 import org.rstudio.core.client.layout.LogicalWindow;
+import org.rstudio.core.client.layout.WindowState;
 import org.rstudio.core.client.theme.ModuleTabLayoutPanel;
 import org.rstudio.core.client.theme.WindowFrame;
 import org.rstudio.core.client.theme.res.ThemeStyles;
 import org.rstudio.core.client.widget.model.ProvidesBusy;
 
 import java.util.ArrayList;
+
 
 class WorkbenchTabPanel
       extends Composite 
@@ -218,8 +220,8 @@ class WorkbenchTabPanel
       
       // deal with migrating from n+1 to n tabs, and with -1 values
       int safeIndex = Math.min(Math.max(0, tabIndex), tabs_.size() - 1);
-      
-      tabPanel_.selectTab(safeIndex);
+      if (safeIndex > 0)
+         tabPanel_.selectTab(safeIndex);
    }
    
    public void selectTab(WorkbenchTab pane)

@@ -237,49 +237,48 @@ public class PaneLayoutPreferencesPane extends PreferencesPane
 
       ValueChangeHandler<ArrayList<Boolean>> vch = new ValueChangeHandler<ArrayList<Boolean>>()
       {
-         // whenever tabset 1 or 2 changes, make sure the other tabset is the opposite
          public void onValueChange(ValueChangeEvent<ArrayList<Boolean>> e)
          {
             dirty_ = true;
-
             ModuleList source = (ModuleList) e.getSource();
-            //ModuleList other = tabSet3ModuleList_;
             ModuleList other = (source == tabSet1ModuleList_)
                                ? tabSet2ModuleList_
                                : tabSet1ModuleList_;
-
-            // if the source configuration is not valid
+            
+            // an index should only be on for one of these lists,
+            ArrayList<Boolean> indices = source.getSelectedIndices();
+            ArrayList<Boolean> otherIndices = other.getSelectedIndices();
+            ArrayList<Boolean> hiddenIndices = tabSet3ModuleList_.getSelectedIndices();
             if (!PaneConfig.isValidConfig(source.getValue()))
             {
-               ArrayList<Boolean> indices = source.getSelectedIndices();
-               ArrayList<Boolean> otherIndices = other.getSelectedIndices();
-               // set the source index to the opposite value of the other index
-               // so every index is true for some list
+               // when the configuration is invalid, we must reset sources to the prior valid
+               // configuration based on the values of the other two lists
                for (int i = 0; i < indices.size(); i++)
-               {
-                  indices.set(i, !otherIndices.get(i));
-               }
+                  indices.set(i, !(otherIndices.get(i) || hiddenIndices.get(i)));
                source.setSelectedIndices(indices);
             }
             else
             {
-               ArrayList<Boolean> indices = source.getSelectedIndices();
-               ArrayList<Boolean> otherIndices = new ArrayList<>();
-               // for every other index, set it to the opposite of the source
-               for (Boolean b : indices)
-                  otherIndices.add(!b);
+               for (int i = 0; i < indices.size(); i++)
+               {
+                  if (indices.get(i))
+                  {
+                     otherIndices.set(i, false);
+                     hiddenIndices.set(i, false);
+                  }
+                  else if (!otherIndices.get(i))
+                     hiddenIndices.set(i, true);
+               }
                other.setSelectedIndices(otherIndices);
+               tabSet3ModuleList_.setSelectedIndices(hiddenIndices);
 
                updateTabSetLabels();
             }
-            // now we should iterate through source, if the index is false on source and other,
-            // set it to true on tabSet3
-            // if the index is true on source, set it to false on other and tabSet3 
-            // what if the config isn't valid? what is an invalid config now?
          }
       };
       tabSet1ModuleList_.addValueChangeHandler(vch);
       tabSet2ModuleList_.addValueChangeHandler(vch);
+      // tabSet3ModuleList_ cannot be changed by the user, so it does not need a VCH
 
       updateTabSetPositions();
       updateTabSetLabels();

@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 
 import java.util.HashMap;
 
+import org.rstudio.core.client.Debug;
 import org.rstudio.core.client.ElementIds;
 import org.rstudio.core.client.events.*;
 import org.rstudio.core.client.layout.RequiresVisibilityChanged;
@@ -125,7 +126,16 @@ public class WindowFrame extends Composite
 
    private void maximize()
    {
-      fireEvent(new WindowStateChangeEvent(WindowState.MAXIMIZE));
+      if (maximizeButton_.getExclusive())
+      {
+         Debug.logToConsole("fire exclusive");
+         fireEvent(new WindowStateChangeEvent(WindowState.EXCLUSIVE));
+      }
+      else
+      {
+         fireEvent(new WindowStateChangeEvent(WindowState.MAXIMIZE));
+         Debug.logToConsole("fire max");
+      }
    }
 
    private void minimize()
@@ -367,9 +377,11 @@ public class WindowFrame extends Composite
       if (state == WindowState.MAXIMIZE)
       {
          addStyleDependentName("maximized");
+         Debug.logToConsole("add maximized");
       }
       else
       {
+         Debug.logToConsole("remove maximized");
          removeStyleDependentName("maximized");
       }
       maximizeButton_.setMaximized(state == WindowState.MAXIMIZE);
@@ -378,9 +390,15 @@ public class WindowFrame extends Composite
    public void setExclusiveDependentState(WindowState state)
    {
       if (state == WindowState.EXCLUSIVE)
+      {
          addStyleDependentName("exclusive");
+         Debug.logToConsole("add Exclusive");
+      }
       else
+      {
+         Debug.logToConsole("remove Exclusive");
          removeStyleDependentName("exclusive");
+      }
       maximizeButton_.setExclusive(state == WindowState.EXCLUSIVE);
    }
 
