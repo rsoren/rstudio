@@ -105,6 +105,11 @@ class EditorPane extends React.Component<EditorPaneProps> {
         ui: {
           dialogs: this.editorDialogs,
           context: this.editorUIContext,
+          display: {
+            openURL(url: string) {
+              window.open(url);
+            }
+          }
         },
       },
       {
@@ -255,10 +260,10 @@ class EditorPane extends React.Component<EditorPaneProps> {
     const pandocFormat = this.editor!.getPandocFormat();
     const warnings = pandocFormat.warnings;
     if (warnings.invalidFormat) {
-      console.log('WARNING: invalid pandoc format ' + warnings.invalidFormat);
+      // console.log('WARNING: invalid pandoc format ' + warnings.invalidFormat);
     }
     if (warnings.invalidOptions.length) {
-      console.log(`WARNING: ${pandocFormat.baseName} does not support options: ${warnings.invalidOptions.join(', ')}`);
+      // console.log(`WARNING: ${pandocFormat.baseName} does not support options: ${warnings.invalidOptions.join(', ')}`);
     }
   }
 }
