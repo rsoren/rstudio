@@ -28,8 +28,6 @@ import { kRestoreLocationTransaction } from "../../api/transaction";
 // take advantage of the fact that absolutely positioned elements are positioned where 
 // they sit in the document if explicit top/bottom/left/right/etc. properties aren't set.
 
-const kMaxPopupWidth = 400;
-
 const key = new PluginKey<DecorationSet>('link-popup');
 
 export class LinkPopupPlugin extends Plugin<DecorationSet> {
@@ -37,6 +35,39 @@ export class LinkPopupPlugin extends Plugin<DecorationSet> {
   constructor(ui: EditorUI, linkCmd: CommandFn, removeLinkCmd: CommandFn) {
 
     let editorView: EditorView;
+
+    function linkPopup(attrs: LinkProps, style?: { [key: string]: string }) {
+      const popup = window.document.createElement("div");
+      popup.classList.add(
+        "pm-popup",
+        "pm-popup-inline-text",
+        "pm-link-popup",
+        "pm-pane-border-color",
+        "pm-background-color",
+        "pm-text-color"
+      );
+      popup.style.position = "absolute";
+      popup.style.display = "inline-block";
+      if (style) {
+        Object.keys(style).forEach(name => {
+          popup.style.setProperty(name, style[name]);
+        });
+      }
+      const link = window.document.createElement("a");
+      link.classList.add(
+        "pm-link",
+        "pm-link-text-color"
+      );
+      link.href = attrs.href;
+      link.innerText = attrs.href;
+      link.onclick = () => {
+        ui.display.openURL(attrs.href);
+        return false;
+      };
+      popup.append(link);
+      
+      return popup;
+    }
 
     super({
       key,
@@ -77,33 +108,34 @@ export class LinkPopupPlugin extends Plugin<DecorationSet> {
             const editingEl = editorView.domAtPos(editingNode!.pos + 1).node as HTMLElement;
             const editingBox = editingEl.getBoundingClientRect();
 
-            // we need to compute whether the popup will be visible (horizontally), and 
-            // if not then give it a 'right' position
+            // we need to compute whether the popup will be visible (horizontally), do
+            // this by testing whether this room for 400px
+            const kMaxPopupWidth = 400;
             const positionRight = (linkCoords.left + kMaxPopupWidth) > editingBox.right;
             let popup: HTMLElement;
             if (positionRight) {
               const linkRightCoords = editorView.coordsAtPos(range.to);
               const linkRightPos = editingBox.right - linkRightCoords.right;
-              popup = linkPopup({ right: linkRightPos + "px"});
+              popup = linkPopup(attrs, { right: linkRightPos + "px"});
             } else {
-              popup = linkPopup();
+              popup = linkPopup(attrs);
             }
 
+            /*
             const  showPopupAsync = async () => {
-              const result = await ui.dialogs.popupLink!(popup, attrs.href);
+              const result = await ui.dialogs.popupLink!(popup, attrs.href, kMaxPopupWidth);
               switch(result) {
-                case PopupLinkResult.Open:
-                  // ui.display.openURL(attrs.href);
-                  break;
                 case PopupLinkResult.Edit:
-
+                  linkCmd(editorView.state, editorView.dispatch, editorView);
                   break;
                 case PopupLinkResult.Remove:
-
+                  removeLinkCmd(editorView.state, editorView.dispatch, editorView);
                   break;
               }
             };
             showPopupAsync();
+            
+            */
 
             // return decorations
             return DecorationSet.create(tr.doc, [Decoration.widget(range.from, popup)]);
@@ -122,17 +154,5 @@ export class LinkPopupPlugin extends Plugin<DecorationSet> {
   }
 }
 
-function linkPopup(style?: { [key: string]: string }) {
-  const popup = window.document.createElement("div");
-  popup.classList.add("pm-inline-text-popup");
-  popup.style.position = "absolute";
-  popup.style.display = "inline-block";
-  popup.style.maxWidth = kMaxPopupWidth + "px";
-  if (style) {
-    Object.keys(style).forEach(name => {
-      popup.style.setProperty(name, style[name]);
-    });
-  }
-  return popup;
-}
+
 
